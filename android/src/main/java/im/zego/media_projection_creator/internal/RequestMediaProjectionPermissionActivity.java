@@ -9,22 +9,21 @@ package im.zego.media_projection_creator.internal;
 //
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import im.zego.media_projection_creator.RequestMediaProjectionPermissionManager;
 
 public class RequestMediaProjectionPermissionActivity extends Activity {
 
     private static final int RequestMediaProjectionPermissionCode = 1001;
 
-    @Override
+          @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -32,7 +31,19 @@ public class RequestMediaProjectionPermissionActivity extends Activity {
         filter.addAction("com.media_projection_creator.request_permission_result_succeeded");
         filter.addAction("com.media_projection_creator.request_permission_result_failed_user_canceled");
         filter.addAction("com.media_projection_creator.request_permission_result_failed_system_version_too_low");
-        registerReceiver(RequestMediaProjectionPermissionManager.getInstance(), filter);
+
+        if (Build.VERSION.SDK_INT >= 33) { // Android 13+
+            registerReceiver(
+                RequestMediaProjectionPermissionManager.getInstance(),
+                filter,
+                2 // Context.RECEIVER_EXPORTED
+            );
+        } else {
+            registerReceiver(
+                RequestMediaProjectionPermissionManager.getInstance(),
+                filter
+            );
+        }
 
         if (Build.VERSION.SDK_INT < 21) {
             sendBroadcast(new Intent("com.media_projection_creator.request_permission_result_failed_system_version_too_low"));

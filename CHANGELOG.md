@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Upgrade target SDK version to 35
+
 ## 1.0.0
 
 * Adapt to flutter v2.10
